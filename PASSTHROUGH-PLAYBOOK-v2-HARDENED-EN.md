@@ -566,20 +566,31 @@ covers 99% of cases. Only switch to binary shm with named rings if the bandwidth
 
 ## 1.4 Feasibility and effort table
 
-| Situation | Mode | Realistic effort |
-|---|---|---|
-| Unity Mono/IL2CPP with BepInEx | β | 4–8 weeks |
-| **Any Unity + ReShade, no loader** | γ | ~2 weeks |
-| Skyrim AE + SKSE (δ) | δ/B | ~1–2 weeks |
-| GTA V Legacy + ScriptHookV | γ | ~2 weeks |
-| Unreal with UE4SS / C# loader | β or δ | 6–10 weeks |
-| RE Engine / FromSoft | δ | 4–8 weeks |
-| Source 1/2 | β/δ | 2–4 weeks |
-| Godot | β | 2–3 weeks |
-| Native without a loader | B + α/δ | 1 week for B; A is unrealistic |
-| Other JVM | α/β | ~1 week |
+> ⚠️ **Estimate for a coding agent working on the project, not for part-time human development.**
+> The timeline varies **heavily** with the agent/model, the quality of reconnaissance, the engine, the
+> amount of reusable code, and how resistant the game is to instrumentation.
+>
+> As a practical rule, a strong agent can finish a passthrough in **hours on the simplest targets**,
+> **1–2 days on many targets with Claude Code**, and **up to ~3–4 days on the hardest cases** covered by
+> this playbook. This is a continuous execution estimate, not a promise. A weaker agent/model can take
+> significantly longer, especially if it repeats attempts without producing new evidence.
 
-⚠️ **“Week” = part-time, for someone who has modded before.** If this is your first project, double it.
+| Situation | Mode | Realistic effort with a strong agent |
+|---|---|---|
+| Unity Mono/IL2CPP with BepInEx | β | ~1–3 days |
+| **Any Unity + ReShade, no loader** | γ | hours–~2 days |
+| Skyrim AE + SKSE (δ) | δ/B | ~1–2 days |
+| GTA V Legacy + ScriptHookV | γ | hours–~2 days |
+| Unreal with UE4SS / C# loader | β or δ | ~2–4 days |
+| RE Engine / FromSoft | δ | ~1–4 days |
+| Source 1/2 | β/δ | ~1–3 days |
+| Godot | β | hours–~2 days |
+| Native without a loader | B + α/δ | ~2–4 days |
+| Other JVM | α/β | hours–~2 days |
+
+⚠️ **The ~3–4 day upper bound is deliberately agent/model-dependent.** Do not treat these numbers as an SLA:
+an agent that skips the right tools/knowledge, fails to validate gates, or gets stuck in retry loops can exceed
+this range substantially.
 
 ## 1.5 GATE 1 — proceed only with the PLAN written down
 
@@ -2300,8 +2311,9 @@ hit trains Block, smithing trains Smithing using `worth()` per material (netheri
 | 11 | Builds | `blocks` → colliders + navmesh | your walls stop enemies; enemies climb your stairs |
 | 12 | Polish | style, sound, menus, LAN | — |
 
-⚠️ **Estimate: 4–8 weeks at half time**, Layers 1–4 reusable with any other target. **If this is
-your first modding project, double it.**
+⚠️ **Estimate with a strong agent: hours to ~3–4 days**, depending heavily on the game, engine, and especially
+the agent/model. **With Claude Code, ~1–2 days is a reasonable expectation for many targets**, while simpler
+games can take only **hours**.
 
 ## Step 0 (new, before 1) — the fake oracles
 
@@ -2863,7 +2875,7 @@ what it has managed to prove.
 
 | | α overlay | β depth-mesh | γ shader | δ guest renders |
 |---|---|---|---|---|
-| **Time** | hours | ~2 weeks | ~2 weeks | ~1–2 weeks |
+| **Typical time with a strong agent** | hours–~3–4 days | ~1–3 days | ~1–3 days | ~1–4 days |
 | **Occlusion** | no | **yes** | **yes** | **yes** |
 | **Host lighting on guest** | no | yes (vertices) | **yes (shader)** | **yes (shader)** |
 | **Relighting** | no | approximate | **yes** | **yes** |
@@ -2875,6 +2887,10 @@ what it has managed to prove.
 ⚠️ **The tradeoff:** if you don't have reliable access to host depth, β and γ are out. **δ does not
 require depth** — only the matrices, to place geometry in the right location. So δ is the plan,
 not the backup plan.
+
+> **About timing:** the estimates in this table are for coding agents and can drop from **days to hours**
+> on simple games. For difficult targets, **~3–4 days is a practical upper range for a strong agent**, but
+> the result depends heavily on the model, available tools, and the quality of reconnaissance.
 
 ---
 
