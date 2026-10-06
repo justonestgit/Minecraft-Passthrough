@@ -55,11 +55,12 @@ específicas de cada jogo/engine.
 Antes de qualquer implementação específica do jogo:
 
 1. consulte @mashup-mods;
-2. pesquise a base de conhecimento do Universal Modder para o jogo exato;
-3. pesquise a engine + versão;
-4. leia as skills/knowledges relevantes;
-5. registre quais fontes foram usadas no MODLOG.md;
-6. valide as instruções contra o build instalado.
+2. faça @reverse-engineering para verificar os arquivos do jogo solicitado, se é possivel fazer o passthrough e possiveis adaptações conforme o codigo do jogo
+3. pesquise a base de conhecimento do Universal Modder para o jogo exato;
+4. pesquise a engine + versão;
+5. leia as skills/knowledges relevantes;
+6. registre quais fontes foram usadas no MODLOG.md;
+7. valide as instruções contra o build instalado.
 
 **Não invente uma técnica de modding quando existe conhecimento relevante disponível.**
 
