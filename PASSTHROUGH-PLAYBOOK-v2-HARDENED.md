@@ -570,20 +570,31 @@ cobre 99% dos casos. Só vá para shm binário com rings nomeados se o orçament
 
 ## 1.4 Tabela de viabilidade e esforço
 
-| Situação | Modo | Esforço realista |
-|---|---|---|
-| Unity Mono/IL2CPP com BepInEx | β | 4–8 semanas |
-| **Qualquer Unity + ReShade, sem loader** | γ | ~2 semanas |
-| Skyrim AE + SKSE (δ) | δ/B | ~1–2 semanas |
-| GTA V Legacy + ScriptHookV | γ | ~2 semanas |
-| Unreal com UE4SS / C# loader | β ou δ | 6–10 semanas |
-| RE Engine / FromSoft | δ | 4–8 semanas |
-| Source 1/2 | β/δ | 2–4 semanas |
-| Godot | β | 2–3 semanas |
-| Nativo sem loader | B + α/δ | 1 semana para B; A é irrealista |
-| Outro JVM | α/β | ~1 semana |
+> ⚠️ **Estimativa para um agente de coding trabalhando no projeto, não para desenvolvimento humano em tempo parcial.**
+> O tempo varia **muito** conforme o agente/modelo, a qualidade da recon, a engine, a quantidade de código
+> reaproveitável e o quanto o jogo resiste à instrumentação.
+>
+> Como regra prática, um agente forte pode concluir um passthrough em **horas nos alvos mais simples**,
+> **1–2 dias em muitos alvos com Claude Code**, e **até ~3–4 dias nos casos mais difíceis** cobertos por
+> este playbook. Isso é uma estimativa de execução contínua, não uma promessa. Um modelo/agente mais fraco
+> pode levar significativamente mais tempo, especialmente se repetir tentativas sem produzir evidência nova.
 
-⚠️ **"Semana" = meio tempo, para alguém que já fez modding antes.** Se for o primeiro projeto, dobre.
+| Situação | Modo | Esforço realista com um agente forte |
+|---|---|---|
+| Unity Mono/IL2CPP com BepInEx | β | ~1–3 dias |
+| **Qualquer Unity + ReShade, sem loader** | γ | horas–~2 dias |
+| Skyrim AE + SKSE (δ) | δ/B | ~1–2 dias |
+| GTA V Legacy + ScriptHookV | γ | horas–~2 dias |
+| Unreal com UE4SS / C# loader | β ou δ | ~2–4 dias |
+| RE Engine / FromSoft | δ | ~1–4 dias |
+| Source 1/2 | β/δ | ~1–3 dias |
+| Godot | β | horas–~2 dias |
+| Nativo sem loader | B + α/δ | ~2–4 dias |
+| Outro JVM | α/β | horas–~2 dias |
+
+⚠️ **O limite superior de ~3–4 dias é deliberadamente dependente do agente/modelo.** Não trate esses números
+como SLA: um agente que não consulta as ferramentas/knowledge certas, não valida os gates ou entra em loops
+de tentativa pode exceder muito essa faixa.
 
 ## 1.5 GATE 1 — só avance com o PLANO escrito
 
@@ -2322,8 +2333,9 @@ do host.
 | 11 | Construções | `blocks` → colliders + navmesh | suas paredes param inimigos; inimigos sobem suas escadas |
 | 12 | Polimento | estilo, som, menus, LAN | — |
 
-⚠️ **Estimativa: 4–8 semanas de meio tempo**, Camadas 1–4 reaproveitadas em qualquer outro alvo. **Se for
-seu primeiro projeto de modding, dobre.**
+⚠️ **Estimativa com um agente forte: horas a ~3–4 dias**, dependendo muito do jogo, da engine e principalmente
+do agente/modelo. **Com Claude Code, ~1–2 dias é uma expectativa razoável para muitos alvos**, e jogos mais
+simples podem cair para **horas**.
 
 ## Passo 0 (novo, antes do 1) — os oracles falsos
 
@@ -2888,7 +2900,7 @@ o que conseguiu provar.
 
 | | α overlay | β depth-mesh | γ shader | δ convidado desenha |
 |---|---|---|---|---|
-| **Tempo** | horas | ~2 sem | ~2 sem | ~1–2 sem |
+| **Tempo típico com agente forte** | horas–~3–4 dias | ~1–3 dias | ~1–3 dias | ~1–4 dias |
 | **Oclusão** | não | **sim** | **sim** | **sim** |
 | **Luz do host no convidado** | não | sim (vértices) | **sim (shader)** | **sim (shader)** |
 | **Reiluminação** | não | aproximada | **sim** | **sim** |
