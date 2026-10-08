@@ -211,7 +211,7 @@ Every relevant technical claim must carry one of these labels in MODLOG.md:
 
 [VERIFIED]      proven on the target build
 [DOCUMENTED]    confirmed by reliable documentation/knowledge
-[INFERRED]      technical inference not yet tthisd
+[INFERRED]      technical inference not yet tested
 [UNKNOWN]       insufficient evidence
 [NEGATIVE]      attempt made and proven to fail
 
@@ -337,13 +337,13 @@ an oracle. For the complete integration, this normally includes:
 - [2.8 Source 1 / Source 2](#28-source-1--source-2)
 - [2.9 .NET / XNA](#29-net--xna--tmodloader--smapi)
 - [2.10 Godot](#210-godot)
-- [2.11 Native without a loader](#211-nativo-sem-loader--o-caminho-difícil)
+- [2.11 Native without a loader](#211-native-without-a-loader--o-hard-path)
 - [2.12 Another JVM game](#212-outro-game-jvm)
 - [2.13 HTML5 / Electron / NW.js / LÖVE](#213-html5--electron--nwjs--löve)
 - [2.14 Data-only engines (answer NO)](#214-engines-de-dados--responda-not)
 
 **Phases 3–8 — Reusable layers (copy, don't rewrite)** → [§3](#phase-3--layer-1--core)
-**Phase 9 — Build order (12 steps with gates)** → [§9](#phase-9--ordem-de-construção)
+**Phase 9 — Build order (12 steps with gates)** → [§9](#phase-9--build-order)
 **Phase 10 — Oracles** → [§10](#phase-10--oracles-required-por-passo)
 **Consolidated pitfalls** → [§11](#11-armadilhas-consolidadas)
 **Per-game checklist** → [§12](#12-checklist-por-game-fillable)
@@ -564,29 +564,29 @@ um backup create "<pasta de saves>" --name <game>-saves    #paths come from um s
 ## Fixado
 - Game: <nome> <version/build>, Steam appid <id>
 - Engine: <engine> <version>
-- Loader disponível: <which> <version>  /  unavailable
+- Available loader: <which> <version>  /  unavailable
 - Anti-cheat: <which> — test mode: <how>
 - Saves: <pasta>
 - Log do host: <caminho>
 - Log do Minecraft: <gameDir>/logs/latest.log
 
 ## A1 — Profundidade
-<yes/no + evidência: capture, recurso, formato, quem tem o attachment final>
-## A2 — Pose de câmera
-<where é montada; objeto/método; posso escrever? how?>
-## A3 — Geometria de colisão
+<yes/no + evidence: capture, resource, format, which side owns the final attachment>
+## A2 — Camera pose
+<where é montada; objeto/método; can I write? how?>
+## A3 — Collision geometry
 <recurso; formato; how extraio?>
 ## A4 — Damage/estado
-<método; assinatura; posso interceptar e cancel?>
+<method; signature; can I intercept and cancel?>
 
 ## Gate de profundidade (se γ)
-<resultado medido: cores distintas por metade, conclusão>
+<measured result: distinct colors per half, conclusion>
 
 ## Anti-cheat / legal
-<veredicto; rota de lançamento offline>
+<verdict; offline launch route>
 
-## Decisão preliminar de rota
-<α/β/γ/δ + eixo de câmera, com uma frase de justificativa>
+## Preliminary route decision
+<α/β/γ/δ + camera axis, with one-sentence justification>
 ```
 
 ---
@@ -1371,7 +1371,7 @@ Why this matters:
 | 4 · Protocol | `HostLink`, tables | [§4](#phase-4--layer-2--protocolo) |
 | 5 · Transport | `FrameExporter`, `SharedMemory`, ABI | [§5](#phase-5--layer-3--transporte-de-pixels) |
 | 6 · Window/input | `WindowOverlay`, `InputBridge` | [§6](#phase-6--layer-4--janela-e-input) |
-| 7 · Collision | `UkGeometry`, `TriShape`, `Voxelizer` | [§7](#phase-7--colisão) |
+| 7 · Collision | `UkGeometry`, `TriShape`, `Voxelizer` | [§7](#phase-7--collision) |
 | 8 · Combat | `Combat`, `Enemies`, `MobWar` | [§8](#phase-8--combate-bidirecional) |
 
 ---
@@ -2176,7 +2176,7 @@ All native swept movement (substeps, step height, ground) continues unchanged.
 ```
 Level 1 — world, 16-block cell
   Long2ObjectOpenHashMap<int[]>   cell → pieces
-  > 64 cells per piece  →  "big" list (always tthisd by AABB)
+  > 64 cells per piece  →  "big" list (always tested by AABB)
   query > 512 cells   →  "big" only
 Level 2 — per piece, within the mesh
   count <= 16  →  linear scan
@@ -3048,7 +3048,7 @@ Most relevant:
 | No redistribution | ScriptHookV, ReShade (the example only automates the download) |
 
 ⚠️ **Disclosure:** the three reference projects disclose the use of AI. ULTRAKILL is "written with Claude
-Code and the universal-modder plugin, directed and play-tthisd by chavi". GTA is "Written with Claude
+Code and the universal-modder plugin, directed and play-tested by chavi". GTA is "Written with Claude
 Code", inspired by chasm's Minecraft-in-Skyrim passthrough and TobynJacobs' Minecraft-in-Elden-Ring. **Be
 honest about what is AI-generated** — communities react poorly to undisclosed "vibe-coded" releases,
 and some recomp Discords **ban** AI projects.
@@ -3063,13 +3063,447 @@ source code for the `minecraft-gta5-passthrough` example.*
 
 *⚠️ **What was NOT verified:** nothing was run. None of the three engines was installed. ✅ =
 reading decompiled code and binary symbols. 📚 = general engineering knowledge. The instructions in §2 are
-**contracts to be filled in**, not tthisd code — adapting them to the specific game is your job, and that work isn't covered here.*
+**contracts to be filled in**, not tested code — adapting them to the specific game is your job, and that work isn't covered here.*
 ---
 # END ORIGINAL HARDENED PLAYBOOK CONTENT
 
 
 
 
+
+
+# V4 ADDENDUM — PASSTHROUGH-MOD-TOOLKIT INTEGRATION
+
+This addendum upgrades the v3 playbook with the architecture and engineering discipline of
+Orinkle/passthrough-mod-toolkit. It is normative for v4.
+
+## 1. THE FIVE-PIECE BRIDGE MODEL
+
+A passthrough is five coordinated pieces, not one mod:
+
+1. GUEST-SIDE MOD: runs inside the guest process.
+2. HOST-SIDE PLUGIN: runs inside the host process.
+3. TRANSPORT LAYER: shared-memory/WebSocket protocol contract.
+4. FRAME COMPOSITOR: ReShade add-on, host renderer, or equivalent.
+5. LAUNCHER: starts, wires, monitors, captures, and shuts down both sides.
+
+Reference topology:
+
+GUEST MOD <----> TRANSPORT <----> HOST PLUGIN
+                       |
+                FRAME COMPOSITOR
+                       |
+                    LAUNCHER
+
+The five-piece decomposition is architectural, not a mandatory ownership model. HOST/GUEST,
+PLAYER AUTHORITY, RENDER AUTHORITY, and PHYSICS AUTHORITY remain independently assigned.
+
+## 2. AUTOMATE THE BONES, MEASURE THE MAGIC
+
+The bridge skeleton can be generated or scaffolded:
+
+- protocol structs;
+- shared-memory layout;
+- WebSocket/control convention;
+- epoch/session guards;
+- heartbeat;
+- seqlock/SPSC ring helpers;
+- fake host/fake guest;
+- negative-control tests;
+- launcher skeleton;
+- generated bindings;
+- parameter lookup;
+- MCP/tool interfaces.
+
+The following MUST remain build-specific evidence:
+
+- loader and injection point;
+- camera matrices;
+- yaw/pitch expressions;
+- coordinate transform;
+- units-per-block;
+- y-offset;
+- depth convention;
+- collision probes and object ceilings;
+- renderer hook;
+- reprojection tuning;
+- engine-native state translation.
+
+Never let a generator turn an unmeasured value into a VERIFIED fact.
+
+## 3. TWO-LAYER SCHEMA CONTRACT
+
+When using schema-driven protocol generation, prefer:
+
+container:
+  fixed memory layout, synchronization primitives, ABI shape
+
+vocabulary:
+  host-specific names, constants, optional fields, namespace, units, event vocabulary
+
+The container should remain stable when a new host only changes vocabulary.
+
+BUT: if a new host requires different memory-region sizes, offsets, or ABI shape, the schema must
+explicitly permit a container revision. Do not force a structurally incompatible host into a false
+"vocabulary-only" fit.
+
+Schema versioning is mandatory:
+- schema_version
+- protocol_version
+- host_id
+- build_id
+- generator_version
+- ABI/layout fingerprint
+
+## 4. EVIDENCE TIERS
+
+Use three primary toolkit tiers plus the v3 tiers:
+
+[MEASURED] measured on the specified build/environment.
+[REPORTED] stated by upstream/source documentation.
+[INFERRED] derived or extrapolated, not verified.
+
+Also preserve:
+[VERIFIED], [DOCUMENTED], [UNKNOWN], [NEGATIVE].
+
+Do not collapse these categories. A value can be [REPORTED] by a project and still be [UNKNOWN]
+for the current user's build.
+
+Every generated parameter record should carry:
+- source;
+- source_commit when legally available;
+- game/build;
+- evidence tier;
+- verified_on_hardware;
+- do_not_package;
+- notes;
+- measurement procedure.
+
+## 5. SINGLE SOURCE OF TRUTH + CODE GENERATION
+
+For a multi-language bridge, one schema should be the source of truth.
+
+Preferred generated targets:
+- C++
+- C#
+- Java
+- Rust
+- Python
+
+Every generated binding MUST have:
+- constants;
+- enums;
+- packed/explicit-layout structs;
+- size/offset checks where the language permits;
+- synchronization helpers where applicable.
+
+Do not manually maintain equivalent protocol structs in five languages.
+
+## 6. ABI VERIFICATION
+
+Do not trust textual assertions alone.
+
+Preferred validation:
+1. generate C++;
+2. compile C++ and record sizeof/offsetof;
+3. generate Rust and compare size_of/offset_of;
+4. load Python ctypes and compare;
+5. compile C# when dotnet is available and compare Marshal.SizeOf/offsets;
+6. compile Java when javac is available or otherwise explicitly mark it as uncompiled;
+7. run structural round-trip tests against licensed reference headers.
+
+Negative test requirement:
+inject one deliberately incorrect offset/field and verify that the ABI test FAILS.
+
+A test that can never fail is not an oracle.
+
+## 7. TRANSPORT CONTRACT
+
+The transport is a contract, not "some shared memory."
+
+Minimum protocol fields:
+- magic;
+- protocol version;
+- schema version;
+- session/epoch;
+- producer/consumer ownership;
+- tick/frame sequence;
+- monotonic timestamp;
+- payload size;
+- flags;
+- CRC/hash where appropriate;
+- heartbeat;
+- error/status code.
+
+Define fixed regions for:
+- control;
+- host state;
+- guest state;
+- input;
+- events;
+- entities;
+- collision;
+- render/depth;
+- diagnostics.
+
+Snapshots:
+- latest value wins.
+
+Events:
+- queue with sequence numbers and explicit overflow behavior.
+
+Never treat an event ring like a snapshot buffer.
+
+## 8. HEARTBEAT, EPOCH AND FAILURE SEMANTICS
+
+Heartbeat proves liveness, not rendering.
+
+Epoch/session invalidation is mandatory:
+- increment epoch on host restart;
+- discard stale messages from older epochs;
+- reset interpolation state;
+- invalidate pending entity handles;
+- require a new handshake.
+
+Watchdogs must check PROCESS existence, not frame production. A minimized game may stop rendering
+without being dead.
+
+Required negative scenarios:
+A. host killed -> guest freezes safely or exits by policy;
+B. host restarted -> old epoch packets are rejected;
+C. malformed/oversized packet -> bridge rejects it;
+D. stale entity ID -> no action;
+E. ring overflow -> explicit drop/coalesce policy.
+
+## 9. FAKE PEERS BEFORE REAL GAMES
+
+Build fake_host and fake_guest before deep engine integration.
+
+They must exercise:
+- handshake;
+- heartbeat;
+- epoch restart;
+- ring wraparound;
+- snapshot replacement;
+- event queue;
+- collision messages;
+- timeout;
+- malformed payload;
+- sequence gaps.
+
+The negative_control harness must deliberately disable each protection and turn the matching oracle
+from PASS to FAIL.
+
+This isolates protocol bugs from game bugs.
+
+## 10. PARAMETER LIBRARY
+
+Maintain a parameter database rather than burying magic numbers in code.
+
+Minimum fields:
+
+parameter_id
+host
+game_version
+build
+engine
+loader
+value
+units
+evidence
+source
+source_commit
+verified_on_hardware
+measurement_method
+do_not_package
+notes
+
+Red parameters that normally require hardware measurement:
+- yaw/pitch;
+- camera matrix;
+- coordinate transform;
+- units-per-block;
+- yOffset;
+- depth convention;
+- collision probe geometry;
+- reprojection lag;
+- render resolution/internal scale;
+- object-count ceilings.
+
+The parameter database is a TODO-to-measure system, not a bag of trusted constants.
+
+## 11. MCP / AGENT TOOLING CONTRACT
+
+If a passthrough toolkit MCP is available, expose at least:
+
+pt_schema_validate
+pt_schema_describe
+pt_param_lookup
+pt_stub_run
+pt_scaffold
+
+The agent should use these as deterministic utilities, not as an oracle that pretends to know
+unmeasured game internals.
+
+Recommended agent loop:
+1. pt_schema_validate
+2. pt_schema_describe
+3. pt_param_lookup for each required parameter
+4. pt_stub_run
+5. pt_scaffold for the fixed bridge skeleton
+6. perform game-specific recon
+7. fill measured vocabulary
+8. regenerate
+9. ABI-test
+10. real-game test
+
+## 12. SCAFFOLD OUTPUT
+
+A new host should produce a visible skeleton rather than silently aliasing another host.
+
+Required:
+- own host ID;
+- own vocabulary section;
+- generated protocol files;
+- TODO-MEASURE list;
+- host_preflight;
+- fake peers;
+- launcher skeleton;
+- README stating unresolved measurements.
+
+Never map an unknown host to SKY/GTA/etc. just because their protocol "looks similar."
+
+## 13. RELEASE / PROVENANCE RULES
+
+Before release:
+- no game files;
+- no loader binaries;
+- no extracted copyrighted assets;
+- no code from no-license repositories;
+- MIT notices retained for MIT sources;
+- exact source commit recorded where legally and technically appropriate;
+- generated files reproducible;
+- evidence tags preserved;
+- AI contribution disclosed honestly;
+- version/build matrix included;
+- uninstall path documented.
+
+Use an explicit THIRD-PARTY-NOTICES.md and ATTRIBUTION-and-lineage.md.
+
+## 14. TOOLKIT-INSPIRED FILE SET
+
+In addition to the v3 memory files, a serious project should have:
+
+schema/schema.yaml
+params/params.yaml
+params/TODO-MEASURE.md
+protocol/
+protocol/generated/
+stubs/
+mcp/
+tools/host_preflight
+tools/negative_control
+tools/layout_check
+RELEASE_CHECKLIST.md
+
+The project may be smaller, but removing a component requires a documented reason.
+
+## 15. TOOLKIT LIMITS ARE PART OF THE PLAYBOOK
+
+This playbook MUST state plainly:
+
+A scaffold is not a finished passthrough.
+
+The host-side plugin is the build-specific portion and cannot be truthfully generated from generic
+knowledge alone. Camera, projection, collision, renderer hooks, coordinate systems and engine-native
+state require measurement.
+
+No amount of schema generation removes the game-specific engineering.
+
+## 16. FIVE-PIECE ACCEPTANCE GATES
+
+Piece 1 Guest:
+- loads;
+- emits state;
+- consumes host state;
+- survives reconnect.
+
+Piece 2 Host:
+- loads;
+- exposes required state;
+- accepts guest geometry/state;
+- handles lifecycle.
+
+Piece 3 Transport:
+- ABI verified;
+- heartbeat verified;
+- epoch verified;
+- overflow verified;
+- malformed input rejected.
+
+Piece 4 Compositor:
+- frame path proven;
+- camera mapping proven;
+- depth/occlusion route proven or consciously omitted;
+- latency measured.
+
+Piece 5 Launcher:
+- deterministic startup;
+- PID/process monitoring;
+- reconnect policy;
+- cleanup;
+- crash-safe shutdown.
+
+All five gates must pass before the integration is called VERIFIED.
+
+## 17. UNIVERSAL V4 BUILD ORDER
+
+RECON
+→ ROUTE
+→ SCHEMA
+→ FAKE PEERS
+→ ABI
+→ GUEST
+→ HOST
+→ TRANSPORT
+→ COMPOSITOR
+→ COLLISION
+→ STATE/EVENTS
+→ LAUNCHER
+→ REAL PLAYTEST
+→ PERFORMANCE
+→ RELEASE AUDIT
+
+Do not reverse this order merely because the model can write code faster than it can measure a game.
+
+## 18. REFERENCE REPOSITORY
+
+Primary toolkit reference:
+https://github.com/Orinkle/passthrough-mod-toolkit
+
+Related technical reference:
+https://github.com/rehan-remade/universal-modder
+
+The toolkit was read as architecture/methodology. Do not copy code from repositories whose license
+does not permit redistribution. Prefer concepts, contracts and independently generated implementations.
+
+## V4 ACCEPTANCE
+
+- [ ] Five pieces explicitly mapped
+- [ ] Schema exists
+- [ ] Vocabulary exists
+- [ ] ABI is measured
+- [ ] Fake peers pass
+- [ ] Negative controls fail when guards are removed
+- [ ] Heartbeat and epoch proven
+- [ ] Parameter evidence tagged
+- [ ] Game-specific magic measured
+- [ ] Host plugin proven
+- [ ] Compositor proven or route intentionally omitted
+- [ ] Collision proven
+- [ ] Launcher cleans up
+- [ ] Release audit passes
+- [ ] Final classification is VERIFIED / PARTIAL / PROTOTYPE / BLOCKED
 
 
 # V5 — MINECRAFT PASSTHROUGH PLAYBOOK
