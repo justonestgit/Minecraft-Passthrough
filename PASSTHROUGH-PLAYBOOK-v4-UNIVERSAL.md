@@ -567,13 +567,13 @@ um backup create "<pasta de saves>" --name <game>-saves    #paths come from um s
 - Available loader: <which> <version>  /  unavailable
 - Anti-cheat: <which> — test mode: <how>
 - Saves: <pasta>
-- Log do host: <caminho>
+- Log do host: <path>
 - Log do Minecraft: <gameDir>/logs/latest.log
 
 ## A1 — Profundidade
 <yes/no + evidence: capture, resource, format, which side owns the final attachment>
 ## A2 — Camera pose
-<where é montada; objeto/método; can I write? how?>
+<where it is constructed; object/method; can I write it? how?>
 ## A3 — Collision geometry
 <recurso; formato; how extraio?>
 ## A4 — Damage/estado
@@ -1342,7 +1342,7 @@ launcher
 Why this matters:
 
 - **The proxy is temporary.** Removed at the end of the session; it never stays in the user's install. Good for
-  security ([§0.4](#04--gate-de-segurança--passe-isto-before-de-continuar)) **and** good for coexistence
+  security ([§0.4](#04--security-gate--pass-before-continuing)) **and** good for coexistence
   with other mods.
 - **The guest runs hidden** — `SDL_HideWindow`, show=false, or just the shm with no window. Nobody sees
   two windows.
